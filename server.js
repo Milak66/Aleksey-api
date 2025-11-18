@@ -28,13 +28,13 @@ app.route('/getData')
     console.log('Received userData:', userData);
 
     const transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 465,
-        secure: true,
+        service: 'Gmail',
         auth: {
-            user: process.env.EMAIL,
-            pass: process.env.PASSWORD,
+          user: process.env.EMAIL,
+          pass: process.env.PASSWORD,
         },
+        logger: true,
+        debug: true,
     });
 
     const mailOptions = {
