@@ -35,6 +35,9 @@ app.route('/getData')
         },
         logger: true,
         debug: true,
+        tls: {
+          rejectUnauthorized: false,
+        },
     });
 
     const mailOptions = {
