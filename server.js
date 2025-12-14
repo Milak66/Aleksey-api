@@ -9,7 +9,10 @@ const app = express();
 const PORT = 5696;
 
 app.use(cors({
-    origin: 'https://aleksey-the-developer.vercel.app',
+    origin: [
+      'https://aleksey-the-developer.vercel.app',
+      'https://thanos-the-developer.vercel.app'
+    ],
     credentials: true
 }));
 
