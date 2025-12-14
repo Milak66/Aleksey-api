@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config();
-const nodemailer = require('nodemailer');
 
 console.log(process.env);
 
@@ -30,30 +29,27 @@ app.route('/getData')
     const { userData } = req.body;
     console.log('Received userData:', userData);
 
-    const transporter = nodemailer.createTransport({
-        host: 'smtp.gmail.com',
-        port: 465,
-        secure: true,
-        auth: {
-            user: process.env.EMAIL,
-            pass: process.env.PASSWORD,
-        },
-    });
+    const telegramToken = process.env.TELEGRAM_TOKEN;
+    const chatId = process.env.TELEGRAM_CHAT_ID;
 
-    const mailOptions = {
-        from: `"Заказчик" <${process.env.EMAIL}>`,
-        to: process.env.EMAIL,
-        subject: 'Новое сообщение от пользователя',
-        text: `Пользователь написал: ${userData}`,
-    };
+    const message = `Пользователь написал: ${userData}`;
 
     try {
-        await transporter.sendMail(mailOptions);
-        res.json({ message: 'Данные успешно отправлены и письмо отправлено' });
-    } catch (error) {
-        console.error('Ошибка при отправке письма:', error);
-        res.status(500).json({ message: 'Ошибка при отправке почты', error: error.toString() });
-    }
+        const response = await fetch(`https://api.telegram.org/bot${telegramToken}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chat_id: chatId, text: message }),
+        });
+    
+        if (!response.ok) {
+          throw new Error(`Telegram API responded with status ${response.status}`);
+        }
+    
+        res.json({ message: 'Сообщение успешно отправлено в Telegram' });
+      } catch (error) {
+        console.error('Ошибка при отправке в Telegram:', error);
+        res.status(500).json({ message: 'Ошибка при отправке в Telegram' });
+      }
 });
 
 app.listen(PORT, () => {
